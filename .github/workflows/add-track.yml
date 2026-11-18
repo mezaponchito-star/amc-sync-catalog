@@ -1,0 +1,46 @@
+name: Add Track to Catalog
+
+on:
+  repository_dispatch:
+    types: [new-track]
+
+permissions:
+  contents: write
+
+jobs:
+  update-json:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Add new track to catalog.json
+        env:
+          TITLE: ${{ github.event.client_payload.title }}
+          ALIAS: ${{ github.event.client_payload.alias }}
+          BPM: ${{ github.event.client_payload.bpm }}
+          KEYWORDS: ${{ github.event.client_payload.keywords }}
+          LINK: ${{ github.event.client_payload.link }}
+        run: |
+          python3 -c '
+          import json, os
+          with open("catalog.json", "r", encoding="utf-8") as f:
+              data = json.load(f)
+          data.insert(0, {
+              "title": os.environ["TITLE"],
+              "alias": os.environ["ALIAS"],
+              "bpm": os.environ["BPM"],
+              "keywords": os.environ["KEYWORDS"],
+              "link": os.environ["LINK"]
+          })
+          with open("catalog.json", "w", encoding="utf-8") as f:
+              json.dump(data, f, indent=2, ensure_ascii=False)
+          '
+
+      - name: Save changes to GitHub
+        run: |
+          git config user.name "A&MC Bot"
+          git config user.email "bot@amc.com"
+          git add catalog.json
+          git commit -m "Add new track: ${{ github.event.client_payload.title }}"
+          git push
