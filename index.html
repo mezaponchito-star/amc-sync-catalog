@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A&MC | Sync Licensing Catalog</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #0f1115; color: #e4e4e7; max-width: 850px; margin: 40px auto; padding: 0 20px; }
+    h1 { color: #ffffff; border-bottom: 1px solid #27272a; padding-bottom: 12px; }
+    .subtitle { color: #a1a1aa; margin-bottom: 30px; }
+    .track { background: #18181b; border: 1px solid #27272a; border-radius: 10px; padding: 20px; margin-bottom: 16px; }
+    .track h2 { margin: 0 0 6px 0; font-size: 1.25rem; color: #fff; }
+    .meta { font-size: 0.9rem; color: #38bdf8; margin-bottom: 8px; font-weight: 600; }
+    .tags { font-size: 0.85rem; color: #a1a1aa; margin-bottom: 14px; }
+    .btn { display: inline-block; background: #2563eb; color: #fff; text-decoration: none; padding: 8px 16px; border-radius: 6px; font-size: 0.9rem; font-weight: 500; }
+    .btn:hover { background: #1d4ed8; }
+  </style>
+</head>
+<body>
+  <h1>Audio&MusicCraftworks (A&MC)</h1>
+  <p class="subtitle">One-Stop Sync Licensing Catalog — Edit Points, 3-Act Structure & Ring-Out Endings</p>
+  <div id="catalog">Loading tracks...</div>
+
+  <script>
+    fetch('catalog.json')
+      .then(res => res.json())
+      .then(tracks => {
+        const container = document.getElementById('catalog');
+        container.innerHTML = tracks.map(t => `
+          <div class="track">
+            <h2>${t.title}</h2>
+            <div class="meta">${t.alias} • ${t.bpm}</div>
+            <div class="tags">${t.keywords}</div>
+            <a class="btn" href="${t.link}" target="_blank">Listen / Preview</a>
+          </div>
+        `).join('');
+      });
+  </script>
+</body>
+</html>
